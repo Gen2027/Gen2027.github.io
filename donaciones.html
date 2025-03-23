@@ -9,34 +9,35 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 50px; /* Espacio uniforme entre tarjeta y formulario */
+            gap: 20px;
             height: 100vh;
             background: #383737;
             margin: 0;
             font-family: Arial, sans-serif;
+            padding: 10px;
+            flex-direction: column; /* Inicia con la tarjeta encima del formulario */
         }
 
         /* Contenedor de la tarjeta */
         .card {
-            width: 300px;
+            width: 100%;
+            max-width: 300px;
             height: 400px;
-            padding: 5px; /* Espacio para el borde degradado */
+            padding: 5px;
             background: linear-gradient(135deg, #ff9100, #ff0000, #ffc400);
-            border-radius: 20px; /* Bordes redondeados */
+            border-radius: 20px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
             position: relative;
             cursor: pointer;
             overflow: hidden;
             transition: transform 0.3s ease;
-            user-select: none; /* Evitar la selección de texto */
+            user-select: none;
         }
 
-        /* Efecto al mantener presionado */
         .card:active {
             transform: scale(1.05);
         }
 
-        /* Fondo de la tarjeta interna */
         .card .inner-card {
             background: linear-gradient(145deg, #525252, #000000);
             border-radius: 15px;
@@ -51,7 +52,6 @@
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
-        /* Contenido frontal */
         .inner-card .front-content,
         .inner-card .back-content {
             position: absolute;
@@ -82,7 +82,6 @@
             animation: pulse 2s infinite;
         }
 
-        /* Transición al presionar */
         .card:active .front-content {
             opacity: 0;
         }
@@ -92,7 +91,6 @@
             transform: scale(1);
         }
 
-        /* Animación de resplandor */
         @keyframes pulse {
             0%, 100% {
                 box-shadow: 0 0 15px rgba(253, 253, 253, 0.3);
@@ -102,9 +100,9 @@
             }
         }
 
-        /* Estilo del iframe del formulario */
         .form-container {
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             height: 500px;
             border: 2px solid #ccc;
             border-radius: 10px;
@@ -117,34 +115,75 @@
             height: 100%;
             border: none;
         }
+
+        /* Estilo del botón */
+        .toggle-button {
+            background-color: #ff9100;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        /* Diseño responsivo */
+        @media (max-width: 600px) {
+            .card {
+                max-width: 100%;
+                height: auto;
+            }
+            .form-container {
+                max-width: 100%;
+                height: auto;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Tarjeta -->
-    <div class="card">
-        <div class="inner-card">
-            <!-- Contenido frontal -->
-            <div class="front-content">
-                <p></p>
-            </div>
+    <!-- Botón para cambiar el diseño -->
+    <button class="toggle-button" onclick="toggleLayout()">Cambiar disposición</button>
 
-            <!-- Contenido trasero -->
-            <div class="back-content">
-                <h3>Datos de Transferencia</h3>
-                <p><strong>Banco:</strong> Banco Ejemplo</p>
-                <p><strong>Cuenta:</strong> 123456789</p>
-                <p><strong>Nombre:</strong> Juan Pérez</p>
-                <p><strong>Correo:</strong> ejemplo@correo.com</p>
-                <p><strong>Referencia:</strong> Donación</p>
+    <!-- Contenedor principal que cambiará entre disposición vertical y horizontal -->
+    <div id="main-container">
+        <!-- Tarjeta -->
+        <div class="card">
+            <div class="inner-card">
+                <div class="front-content">
+                    <p></p>
+                </div>
+                <div class="back-content">
+                    <h3>Datos de Transferencia</h3>
+                    <p><strong>Banco:</strong> Banco Ejemplo</p>
+                    <p><strong>Cuenta:</strong> 123456789</p>
+                    <p><strong>Nombre:</strong> Juan Pérez</p>
+                    <p><strong>Correo:</strong> ejemplo@correo.com</p>
+                    <p><strong>Referencia:</strong> Donación</p>
+                </div>
             </div>
+        </div>
+
+        <!-- Formulario de Google -->
+        <div class="form-container">
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdicKGgzmrDRRwzUCHFgq4OjZMQum7Z3ZOYng5qi_5JuPmbww/viewform?usp=sf_link"></iframe>
         </div>
     </div>
 
-    <!-- Formulario de Google -->
-    <div class="form-container">
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdicKGgzmrDRRwzUCHFgq4OjZMQum7Z3ZOYng5qi_5JuPmbww/viewform?usp=sf_link"></iframe>
-    </div>
+    <script>
+        function toggleLayout() {
+            // Obtener el contenedor principal
+            var container = document.getElementById('main-container');
+            
+            // Cambiar el layout entre fila y columna
+            if (container.style.flexDirection === 'row') {
+                container.style.flexDirection = 'column';  // Tarjeta arriba del formulario
+            } else {
+                container.style.flexDirection = 'row';    // Tarjeta al lado del formulario
+            }
+        }
+    </script>
 
 </body>
 </html>
