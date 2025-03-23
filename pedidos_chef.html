@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos para el Chef 👨‍🍳👩‍🍳</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #343a40;
+        }
+
+        .chef-selection {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .chef-selection button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .chef-selection button:hover {
+            background-color: #0056b3;
+        }
+
+        .orders-section {
+            width: 80%;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-item {
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-item button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .order-item button:hover {
+            background-color: #0056b3;
+        }
+
+        .order-item.completed {
+            background-color: #28a745;
+        }
+
+        .order-item.processing {
+            background-color: #ffee00;
+        }
+
+        .order-item button.disabled {
+            background-color: #d6d6d6;
+            cursor: not-allowed;
+        }
+
+        .order-item p {
+            margin: 5px 0;
+            color: #495057;
+        }
+
+        .order-item .total {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        /* Estilo para el ID del chef */
+        .chef-id {
+            color: red;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pedidos para el Chef</h1>
+
+    <!-- Selección de chef -->
+    <div class="chef-selection" id="chefSelection">
+        <!-- Botones de chefs fijos -->
+        <button data-chef-id="chef1">Chef 1</button>
+        <button data-chef-id="chef2">Chef 2</button>
+        <button data-chef-id="chef3">Chef 3</button>
+        <button data-chef-id="chef4">Chef 4</button>
+        <button data-chef-id="chef5">Chef 5</button>
+        <button data-chef-id="chef6">Chef 6</button>
+        <button data-chef-id="chef7">Chef 7</button>
+        <button data-chef-id="chef8">Chef 8</button>
+        <button data-chef-id="chef9">Chef 9</button>
+        <button data-chef-id="chef10">Chef 10</button>
+        <button data-chef-id="chef11">Chef 11</button>
+        <button data-chef-id="chef12">Chef 12</button>
+        <button data-chef-id="chef13">Chef 13</button>
+        <button data-chef-id="chef14">Chef 14</button>
+        <button data-chef-id="chef15">Chef 15</button>
+        <button data-chef-id="chef16">Chef 16</button>
+        <button data-chef-id="chef17">Chef 17</button>
+        <button data-chef-id="chef18">Chef 18</button>
+        <button data-chef-id="chef19">Chef 19</button>
+        <button data-chef-id="chef20">Chef 20</button>
+        <button data-chef-id="chef21">Chef 21</button>
+        <button data-chef-id="chef22">Chef 22</button>
+        <button data-chef-id="chef23">Chef 23</button>
+        <button data-chef-id="chef24">Chef 24</button>
+        <button data-chef-id="chef25">Chef 25</button>
+        <button data-chef-id="chef26">Chef 26</button>
+        <button data-chef-id="chef27">Chef 27</button>
+        <button data-chef-id="chef28">Chef 28</button>
+        <button data-chef-id="chef29">Chef 29</button>
+        <button data-chef-id="chef30">Chef 30</button>
+        <button data-chef-id="chef31">Chef 31</button>
+        <button data-chef-id="chef32">Chef 32</button>
+        <button data-chef-id="chef33">Chef 33</button>
+        <button data-chef-id="Visualizador">Pedidos</button>
+    </div>
+
+    <!-- Contenedor de pedidos -->
+    <div class="orders-section" id="ordersContainer" style="display: none;">
+        <!-- Los pedidos aparecerán aquí -->
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue, update, remove, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDtxPwyd44kRcj-SoUdi9Aut0OEgzmDjNM",
+            authDomain: "autoservicio-of.firebaseapp.com",
+            databaseURL: "https://autoservicio-of-default-rtdb.firebaseio.com",
+            projectId: "autoservicio-of",
+            storageBucket: "autoservicio-of.firebasestorage.app",
+            messagingSenderId: "367030629321",
+            appId: "1:367030629321:web:a5960716dd0e46e01f2e18",
+            measurementId: "G-426N12ZQY2"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Variables
+        const ordersRef = ref(db, 'orders'); // Referencia a los pedidos en Firebase
+        const completeOrdersRef = ref(db, 'completeorders'); // Referencia para los pedidos completados
+        let currentChefId = null; // ID del chef seleccionado
+        const chefSelection = document.getElementById('chefSelection');
+        const ordersContainer = document.getElementById('ordersContainer');
+
+        // Función para mostrar los pedidos
+        function displayOrders(orders) {
+            ordersContainer.innerHTML = '';
+
+            orders.forEach(order => {
+                const orderDiv = document.createElement('div');
+                orderDiv.classList.add('order-item');
+
+                if (order.status === 'Completado') {
+                    orderDiv.classList.add('completed');
+                } else if (order.status === 'En Proceso') {
+                    orderDiv.classList.add('processing');
+                }
+
+                let itemsList = '';
+                order.items.forEach(item => {
+                    itemsList += `<p><strong>${item.product} x${item.quantity}</strong></p>`;
+                });
+
+                // Mostrar el ID del chef si el pedido está en proceso
+                const chefInfo = order.chefId 
+                    ? `<p class="chef-id">ATENDIDO POR: ${order.chefId}</p>` 
+                    : '';
+
+                orderDiv.innerHTML = `
+                    <p><strong>Cliente:</strong> ${order.clientName}</p>
+                    <p><strong>Detalles:</strong> ${order.details}</p>
+                    ${itemsList}
+                    <p class="total"><strong>Total:</strong> CLP $${parseFloat(order.total).toLocaleString('es-CL')}</p>
+                    ${chefInfo}
+                    <button data-action="process" data-order-id="${order.id}" ${order.status === 'En Proceso' ? 'disabled' : ''}>Marcar como En Proceso</button>
+                    <button data-action="complete" data-order-id="${order.id}" ${order.status === 'Completado' || order.chefId !== currentChefId ? 'disabled' : ''}>Marcar como Completado</button>
+                `;
+
+                ordersContainer.appendChild(orderDiv);
+            });
+        }
+
+        // Manejar la selección del chef
+        chefSelection.addEventListener('click', (event) => {
+            const button = event.target;
+            const chefId = button.getAttribute('data-chef-id');
+
+            if (chefId) {
+                currentChefId = chefId;
+                chefSelection.style.display = 'none';
+                ordersContainer.style.display = 'block';
+
+                // Escuchar los cambios en los pedidos
+                onValue(ordersRef, (snapshot) => {
+                    const orders = [];
+                    snapshot.forEach(childSnapshot => {
+                        const orderData = childSnapshot.val();
+                        orders.push({ id: childSnapshot.key, ...orderData });
+                    });
+
+                    displayOrders(orders);
+                });
+            }
+        });
+
+        // Actualizar el estado de los pedidos
+        ordersContainer.addEventListener('click', (event) => {
+            const button = event.target;
+            const action = button.getAttribute('data-action');
+            const orderId = button.getAttribute('data-order-id');
+
+            if (action === 'process') {
+                update(ref(db, `orders/${orderId}`), { status: 'En Proceso', chefId: currentChefId });
+            } else if (action === 'complete') {
+                // Mover el pedido a completeorders y eliminarlo de orders
+                const orderRef = ref(db, `orders/${orderId}`);
+                onValue(orderRef, (snapshot) => {
+                    const orderData = snapshot.val();
+                    push(completeOrdersRef, orderData); // Mover el pedido
+                    remove(orderRef); // Eliminarlo de orders
+                });
+            }
+        });
+    </script>
+</body>
+</html>

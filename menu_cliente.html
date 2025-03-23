@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú 🍱</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-container input[type="text"],
+        .form-container input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-container button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .menu {
+            margin-top: 20px;
+        }
+
+        .menu-item {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-item input {
+            width: 60px;
+            margin-left: 10px;
+        }
+
+        .total {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        /* Estilos para la alerta personalizada */
+        .custom-alert-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .custom-alert {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .custom-alert p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .custom-alert button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .custom-alert button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Formulario de Pedido</h1>
+
+    <div class="form-container">
+        <form id="orderForm">
+            <label for="clientName">Nombre del Cliente:</label>
+            <input type="text" id="clientName" required>
+
+            <label for="details">Detalles:</label>
+            <input type="text" id="details">
+
+            <!-- Menú de productos -->
+            <div class="menu" id="menu">
+                <div class="menu-item">
+                    <span>Producto A - $1000</span>
+                    <input type="number" class="quantity" id="quantityA" value="0" min="0">
+                </div>
+                <div class="menu-item">
+                    <span>Producto B - $2000</span>
+                    <input type="number" class="quantity" id="quantityB" value="0" min="0">
+                </div>
+                <div class="menu-item">
+                    <span>Producto C - $3000</span>
+                    <input type="number" class="quantity" id="quantityC" value="0" min="0">
+                </div>
+            </div>
+
+            <div class="total">
+                <label for="total">Total: CLP $</label>
+                <input type="number" id="total" value="0" readonly>
+            </div>
+
+            <button type="submit">Enviar Pedido</button>
+        </form>
+    </div>
+
+    <!-- Contenedor de la alerta personalizada -->
+    <div class="custom-alert-container" id="customAlertContainer">
+        <div class="custom-alert">
+            <p id="customAlertMessage"></p>
+            <button>Aceptar</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDtxPwyd44kRcj-SoUdi9Aut0OEgzmDjNM",
+            authDomain: "autoservicio-of.firebaseapp.com",
+            databaseURL: "https://autoservicio-of-default-rtdb.firebaseio.com",
+            projectId: "autoservicio-of",
+            storageBucket: "autoservicio-of.firebasestorage.app",
+            messagingSenderId: "367030629321",
+            appId: "1:367030629321:web:a5960716dd0e46e01f2e18",
+            measurementId: "G-426N12ZQY2"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const productPrices = {
+            "Producto A": 1000,
+            "Producto B": 2000,
+            "Producto C": 3000
+        };
+
+        function updateTotal() {
+            let total = 0;
+
+            const quantityA = document.getElementById('quantityA').value;
+            const quantityB = document.getElementById('quantityB').value;
+            const quantityC = document.getElementById('quantityC').value;
+
+            total += productPrices["Producto A"] * quantityA;
+            total += productPrices["Producto B"] * quantityB;
+            total += productPrices["Producto C"] * quantityC;
+
+            document.getElementById('total').value = total;
+        }
+
+        document.querySelectorAll('.quantity').forEach(input => {
+            input.addEventListener('input', updateTotal);
+        });
+
+        function showCustomAlert(message) {
+            const alertContainer = document.getElementById('customAlertContainer');
+            const alertMessage = document.getElementById('customAlertMessage');
+
+            alertMessage.textContent = message;
+            alertContainer.style.display = 'flex';
+        }
+
+        function closeCustomAlert() {
+            const alertContainer = document.getElementById('customAlertContainer');
+            alertContainer.style.display = 'none';
+        }
+
+        document.querySelector('.custom-alert button').addEventListener('click', closeCustomAlert);
+
+        document.getElementById('orderForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const clientName = document.getElementById('clientName').value;
+            const details = document.getElementById('details').value;
+            const total = document.getElementById('total').value;
+
+            const quantityA = document.getElementById('quantityA').value;
+            const quantityB = document.getElementById('quantityB').value;
+            const quantityC = document.getElementById('quantityC').value;
+
+            const order = {
+                clientName: clientName,
+                details: details,
+                total: total,
+                status: 'Pendiente',
+                timestamp: new Date().toISOString(),
+                items: []
+            };
+
+            if (quantityA > 0) {
+                order.items.push({ product: "Producto A", quantity: quantityA });
+            }
+            if (quantityB > 0) {
+                order.items.push({ product: "Producto B", quantity: quantityB });
+            }
+            if (quantityC > 0) {
+                order.items.push({ product: "Producto C", quantity: quantityC });
+            }
+
+            if (order.items.length === 0) {
+                showCustomAlert("Por favor, selecciona al menos un producto.");
+                return;
+            }
+
+            const ordersRef = ref(db, 'orders');
+            const newOrderRef = push(ordersRef);
+            set(newOrderRef, order)
+                .then(() => {
+                    showCustomAlert("Pedido enviado exitosamente.");
+                    document.getElementById('orderForm').reset();
+                    document.getElementById('total').value = "0";
+                })
+                .catch(error => {
+                    showCustomAlert("Error al enviar el pedido: " + error.message);
+                });
+        });
+    </script>
+</body>
+</html>
