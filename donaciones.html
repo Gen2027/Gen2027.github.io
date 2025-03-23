@@ -15,7 +15,19 @@
             margin: 0;
             font-family: Arial, sans-serif;
             padding: 10px;
-            flex-direction: column; /* Inicia con la tarjeta encima del formulario */
+            flex-direction: column;
+            overflow-y: auto; /* Permitir desplazamiento vertical */
+        }
+
+        /* Contenedor principal flexible */
+        #main-container {
+            display: flex;
+            flex-direction: column; /* Comienza con la tarjeta arriba del formulario */
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
         }
 
         /* Contenedor de la tarjeta */
@@ -116,7 +128,6 @@
             border: none;
         }
 
-        /* Estilo del botón */
         .toggle-button {
             background-color: #ff9100;
             border: none;
@@ -128,7 +139,6 @@
             margin: 10px 0;
         }
 
-        /* Diseño responsivo */
         @media (max-width: 600px) {
             .card {
                 max-width: 100%;
@@ -143,7 +153,7 @@
 </head>
 <body>
 
-    <!-- Botón para cambiar el diseño -->
+    <!-- Botón para cambiar la disposición -->
     <button class="toggle-button" onclick="toggleLayout()">Cambiar disposición</button>
 
     <!-- Contenedor principal que cambiará entre disposición vertical y horizontal -->
@@ -173,10 +183,9 @@
 
     <script>
         function toggleLayout() {
-            // Obtener el contenedor principal
             var container = document.getElementById('main-container');
-            
-            // Cambiar el layout entre fila y columna
+
+            // Cambiar la dirección de la disposición
             if (container.style.flexDirection === 'row') {
                 container.style.flexDirection = 'column';  // Tarjeta arriba del formulario
             } else {
